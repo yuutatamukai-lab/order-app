@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Loading</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #e0e0e0;
+      font-family: sans-serif;
+    }
+
+    .text {
+      font-size: 24px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="text">Now Loading...</div>
+
+  <script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+/* ===============================
+   Supabase 初期化
+================================ */
+const supabase = createClient(
+  "https://ididxhgszvdvfyfzwfgm.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkaWR4aGdzenZkdmZ5Znp3ZmdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3Mzc5MzgsImV4cCI6MjA4MjMxMzkzOH0.ZVOS2nxT8KbCB7U5xL0DKy9DGj3KrjJU7AJkR0_b33g"
+);
+
+/* ===============================
+   認証チェック
+================================ */
+const { data } = await supabase.auth.getUser();
+
+if (!data.user) {
+  // 未ログインならログイン画面へ
+  location.href = "/login.html";
+  throw new Error("not authenticated");
+}
+
+/* ===============================
+   店舗・役割の振り分け（仮）
+   ※今は email で判定する
+================================ */
+const email = data.user.email;
+
+// 仙石山店
+if (email === "sengokuyama@app.local") {
+  location.href = "sengokuyama/index.html";
+}
+// 麹町店
+else if (email === "/koujimachi@app.local") {
+  location.href = "/koujimachi/index.html";
+}
+// 西麻布店
+else if (email === "/nisiazabu@app.local") {
+  location.href = "/nisiazabu/index.html";
+}
+// トータル表示、マイナス処理
+else if (email === "/master@app.local"){
+  location.href = "/master/index.html";
+}
+//　セントラルキッチン
+else if (email === "/central_kichen@app.local"){
+  location.href = "/central_kichen/index.html";
+}
+//　倉庫
+else if (email === "/storage_shed@app.local"){
+  location.href = "/storage_shed/index.html";
+}
+
+</script>
+</body>
+</html>

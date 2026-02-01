@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>パスワード再設定</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: sans-serif;
+      background: #e0e0e0;
+    }
+
+    .container {
+      width: 320px;
+      text-align: center;
+      background: #fff;
+      padding: 40px 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    input {
+      width: 100%;
+      font-size: 18px;
+      padding: 12px;
+      margin-bottom: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      font-size: 18px;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: #2f6f4e;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    #msg {
+      margin-top: 16px;
+      font-size: 14px;
+    }
+
+    a {
+      display: block;
+      margin-top: 16px;
+      font-size: 14px;
+      color: #666;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>パスワード再設定</h1>
+
+    <input id="email" placeholder="メールアドレス">
+
+    <button id="sendBtn">再設定メールを送信</button>
+
+    <div id="msg"></div>
+
+    <a href="/login.html">ログイン画面に戻る</a>
+  </div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const supabase = createClient(
+  "https://ididxhgszvdvfyfzwfgm.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkaWR4aGdzenZkdmZ5Znp3ZmdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3Mzc5MzgsImV4cCI6MjA4MjMxMzkzOH0.ZVOS2nxT8KbCB7U5xL0DKy9DGj3KrjJU7AJkR0_b33g"
+);
+
+const { data: { session } } = await supabase.auth.getSession();
+
+if (session) {
+  // すでにログインしているユーザーは reset を使わせない
+  const role = session.user.user_metadata?.role;
+
+  if (role === "master") {
+    location.replace("/Master/index.html");
+  } else if (role === "storage_shed") {
+    location.replace("/storage_shed/index.html");
+  } else if (role === "central_kichen") {
+    location.replace("/central_kichen/index.html");
+  } else {
+    // role 不明時はログイン画面へ
+    location.replace("/login.html");
+  }
+}
+
+document.getElementById("sendBtn").onclick = async () => {
+  const email = document.getElementById("email").value;
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: location.origin + "/update_password.html"
+  });
+
+  const msg = document.getElementById("msg");
+  if (error) {
+    msg.textContent = "送信に失敗しました";
+    msg.style.color = "#d00";
+  } else {
+    msg.textContent = "再設定メールを送信しました";
+    msg.style.color = "#080";
+  }
+};
+</script>
+</body>
+</html>

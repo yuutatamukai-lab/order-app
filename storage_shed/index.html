@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>発注一覧</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 16px;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 16px;
+    }
+    .storeBtn {
+      font-size: 20px;
+      padding: 12px 20px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+    th, td {
+      border-bottom: 1px solid #ccc;
+      padding: 14px 8px;
+      font-size: 22px;
+    }
+    th {
+      text-align: left;
+      font-weight: bold;
+    }
+    td:last-child {
+      text-align: right;
+      font-weight: bold;
+    }
+    summary {
+      font-size: 22px;
+      padding: 8px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <h1 id="pageTitle">倉庫向け 発注一覧</h1>
+  <button id="logoutBtn" style="
+  font-size:16px;
+  padding:8px 14px;
+  margin-bottom:12px;
+">
+  ログアウト
+</button>
+  <div id="currentStoreLabel" style="
+  font-size:20px;
+  font-weight:bold;
+  margin-bottom:12px;
+  padding:8px 12px;
+">
+  表示中店舗：仙石山
+</div>
+
+  <!-- 店舗切り替え -->
+  <div style="margin-bottom:16px;">
+    <label>店舗切り替え：</label>
+    <button class="storeBtn" data-store="store_a">仙石山</button>
+    <button class="storeBtn" data-store="store_b">麹町</button>
+    <button class="storeBtn" data-store="store_c">西麻布
+    </button>
+  </div>
+
+  <!-- 折りたたみメニュー -->
+  <details open>
+    <summary style="font-weight:bold; cursor:pointer;">今日の発注一覧</summary>
+
+    <table>
+      <thead>
+        <tr>
+          <th>品目</th>
+          <th>合計数量（倉庫）</th>
+        </tr>
+      </thead>
+      <tbody id="todayTable"></tbody>
+    </table>
+    <!-- 備考表示 -->
+    <div id="todayNote" style="
+      margin-top:16px;
+      padding:12px;
+      font-size:20px;
+      border-top:2px solid #ccc;
+      white-space:pre-wrap;
+    ">
+      備考：なし
+    </div>
+  </details>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = "https://ididxhgszvdvfyfzwfgm.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkaWR4aGdzenZkdmZ5Znp3ZmdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3Mzc5MzgsImV4cCI6MjA4MjMxMzkzOH0.ZVOS2nxT8KbCB7U5xL0DKy9DGj3KrjJU7AJkR0_b33g";
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* ===============================
+   認証・権限チェック（倉庫専用）
+================================ */
+
+// 初期セッションを正しく取得
+const {
+  data: { session }
+} = await supabase.auth.getSession();
+
+if (!session || !session.user) {
+  // 未ログインは強制ログイン画面へ
+  location.replace("../login.html");
+  throw new Error("not authenticated");
+}
+
+const user = session.user;
+
+// 保管庫 or Master のみ許可
+const role = user.user_metadata?.role;
+if (role !== "storage_shed" && role !== "master") {
+  location.replace("../login.html");
+  throw new Error("not authorized");
+}
+
+// セッション切れ・ログアウト検知
+supabase.auth.onAuthStateChange((event) => {
+  if (event === "SIGNED_OUT") {
+    location.replace("../login.html");
+  }
+});
+
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+  logoutBtn.onclick = async () => {
+    await supabase.auth.signOut();
+    location.replace("../login.html");
+  };
+}
+
+let currentStore = "store_a";
+const STORE_NAMES = {
+  store_a: "仙石山",
+  store_b: "麹町",
+  store_c: "西麻布"
+};
+
+const todayTable = document.getElementById("todayTable");
+
+async function loadTodayOrders() {
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const dateLabel = new Date(today).toLocaleDateString("ja-JP");
+
+  document.getElementById("pageTitle").textContent = `発注一覧（${dateLabel}）`;
+  document.getElementById("currentStoreLabel").textContent =
+    `表示中店舗：${STORE_NAMES[currentStore] ?? currentStore}`;
+
+  todayTable.innerHTML = "";
+
+  console.log("読み込み開始", {
+    store: currentStore,
+    order_date: today
+  });
+
+  const { data, error } = await supabase
+    .from("orders")
+    .select("item, quantity, note, category")
+    .eq("store_id", currentStore)
+    .eq("order_date", today)
+    .in("category", ["C", "D", "E"]);
+
+  console.log("取得結果", data, error);
+
+  if (error) {
+    alert("読み込み失敗");
+    console.error(error);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    todayTable.innerHTML = `<tr><td colspan="2">データがありません</td></tr>`;
+    document.getElementById("todayNote").textContent = "備考：なし";
+    return;
+  }
+
+  const itemTotals = {};
+  let latestNote = "";
+
+  data.forEach(row => {
+    const item = row.item ?? "未分類";
+    const qty = Number(row.quantity) || 0;
+    itemTotals[item] = (itemTotals[item] || 0) + qty;
+
+    if (row.note && row.note.trim() !== "") {
+      latestNote = row.note;
+    }
+  });
+
+  Object.entries(itemTotals).forEach(([item, qty]) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${item}</td><td>${qty}</td>`;
+    todayTable.appendChild(tr);
+  });
+
+  document.getElementById("todayNote").textContent =
+    latestNote ? `備考：${latestNote}` : "備考：なし";
+}
+
+// 店舗切り替え
+document.querySelectorAll(".storeBtn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    currentStore = btn.dataset.store;
+    loadTodayOrders();
+  });
+});
+
+// 初期表示
+loadTodayOrders();
+</script>
+</body></html>

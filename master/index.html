@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>管理画面（発注集計）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont;
+      margin: 16px;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 12px;
+      font-size: 16px;
+      text-align: left;
+    }
+
+    th {
+      background: #f0f0f0;
+    }
+
+    button, select {
+      font-size: 18px;
+      padding: 8px 12px;
+    }
+
+    #dateButton {
+      font-size: 18px;
+      padding: 8px 16px;
+    }
+
+    dialog {
+      border: 1px solid #ccc;
+      padding: 16px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>発注管理画面（品目別合計）</h1>
+<div id="currentView" style="margin-bottom:12px; font-size:16px; color:#555;"></div>
+<div style="margin-bottom:16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+  <label>
+    日付：
+    <button id="dateButton">日付を選択</button>
+    <span id="selectedDate"></span>
+  </label>
+
+  <label>
+    店舗：
+    <select id="storeSelect">
+      <option value="">全店舗</option>
+      <option value="store_a">仙石山</option>
+      <option value="store_b">麹町</option>
+      <option value="store_c">西麻布</option>
+    </select>
+  </label>
+
+  <button id="reloadBtn">再読み込み</button>
+</div>
+
+<dialog id="dateDialog">
+  <div style="display:flex; gap:8px; margin-bottom:12px;">
+    <select id="yearSelect"></select>
+    <select id="monthSelect"></select>
+    <select id="daySelect"></select>
+  </div>
+  <button id="dateOk">決定</button>
+  <button id="dateCancel">キャンセル</button>
+</dialog>
+
+<table>
+  <thead>
+    <tr>
+      <th>品目</th>
+      <th>合計数</th>
+    </tr>
+  </thead>
+  <tbody id="summaryBody"></tbody>
+</table>
+<div style="margin-top:16px; display:flex; gap:12px;">
+  <button id="minusBtn">マイナス処理</button>
+</div>
+
+<script type="module">
+  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+  console.log("admin.js start");
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  const selectedDateSpan = document.getElementById("selectedDate");
+  const dateButton = document.getElementById("dateButton");
+  const dateDialog = document.getElementById("dateDialog");
+
+  let selectedDate = "";
+
+  selectedDateSpan.textContent = selectedDate;
+
+  const yearSelect = document.getElementById("yearSelect");
+  const monthSelect = document.getElementById("monthSelect");
+  const daySelect = document.getElementById("daySelect");
+
+  const currentYear = new Date().getFullYear();
+  for (let y = currentYear - 1; y <= currentYear + 1; y++) {
+    const opt = document.createElement("option");
+    opt.value = y;
+    opt.textContent = y + "年";
+    yearSelect.appendChild(opt);
+  }
+
+  for (let m = 1; m <= 12; m++) {
+    const opt = document.createElement("option");
+    opt.value = m.toString().padStart(2, "0");
+    opt.textContent = m + "月";
+    monthSelect.appendChild(opt);
+  }
+
+  for (let d = 1; d <= 31; d++) {
+    const opt = document.createElement("option");
+    opt.value = d.toString().padStart(2, "0");
+    opt.textContent = d + "日";
+    daySelect.appendChild(opt);
+  }
+
+  function setSelectFromDate(dateStr) {
+    const [y, m, d] = dateStr.split("-");
+    yearSelect.value = y;
+    monthSelect.value = m;
+    daySelect.value = d;
+  }
+
+  if (selectedDate) {
+    setSelectFromDate(selectedDate);
+  }
+
+  dateButton.addEventListener("click", () => {
+    if (selectedDate) {
+      setSelectFromDate(selectedDate);
+    }
+    dateDialog.showModal();
+  });
+
+  document.getElementById("dateOk").addEventListener("click", () => {
+    selectedDate = `${yearSelect.value}-${monthSelect.value}-${daySelect.value}`;
+    selectedDateSpan.textContent = selectedDate;
+    dateDialog.close();
+  });
+
+  document.getElementById("dateCancel").addEventListener("click", () => {
+    dateDialog.close();
+  });
+
+  const SUPABASE_URL = "https://ididxhgszvdvfyfzwfgm.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkaWR4aGdzenZkdmZ5Znp3ZmdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3Mzc5MzgsImV4cCI6MjA4MjMxMzkzOH0.ZVOS2nxT8KbCB7U5xL0DKy9DGj3KrjJU7AJkR0_b33g";
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  /* ===============================
+     認証・権限チェック（Master専用）
+  ================================= */
+
+  // 初期セッションを正しく取得（Supabase v2 安定版）
+  const {
+    data: { session }
+  } = await supabase.auth.getSession();
+
+  if (!session || !session.user) {
+    // 未ログインは強制的にログイン画面へ
+    location.replace("../login.html");
+    throw new Error("not authenticated");
+  }
+
+  const user = session.user;
+  console.log("user_metadata:", user.user_metadata);
+
+  // Master 権限のみ許可
+  if (user.user_metadata?.role !== "master") {
+    location.replace("../login.html");
+    throw new Error("not authorized");
+  }
+
+
+  // セッション切れ・ログアウト検知
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === "SIGNED_OUT") {
+      location.replace("../login.html");
+    }
+  });
+
+  async function loadSummary() {
+    console.log("loadSummary start");
+
+    const viewLabel = document.getElementById("currentView");
+
+    const dateValue = selectedDate;
+    const storeValue = document.getElementById("storeSelect").value;
+
+    let query = supabase
+      .from("orders")
+      .select("item, quantity");
+
+    if (storeValue) {
+      query = query.eq("store_id", storeValue);
+    }
+
+    if (dateValue) {
+      query = query.eq("order_date", dateValue);
+    }
+
+    let viewText = "表示中：";
+
+    if (!storeValue && !dateValue) {
+      viewText += "全店舗・全期間 合計";
+    } else {
+      if (storeValue) viewText += `店舗=${storeValue} `;
+      if (dateValue) viewText += `日付=${dateValue}`;
+    }
+    viewLabel.textContent = viewText;
+
+    const { data, error } = await query;
+
+    console.log("data:", data);
+    console.log("error:", error);
+
+    if (error) {
+      alert("読み込み失敗");
+      return;
+    }
+
+    const tbody = document.getElementById("summaryBody");
+    tbody.innerHTML = "";
+
+    if (!data || data.length === 0) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td colspan="2">データがありません</td>`;
+      tbody.appendChild(tr);
+      return;
+    }
+
+    const summary = {};
+
+    data.forEach(row => {
+      const item = row.item;
+      const qty = Number(row.quantity || 0);
+
+      if (!summary[item]) {
+        summary[item] = 0;
+      }
+      summary[item] += qty;
+    });
+
+    Object.keys(summary).sort().forEach(item => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${item}</td>
+        <td>${summary[item]}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  document.getElementById("reloadBtn").addEventListener("click", loadSummary);
+
+  document.getElementById("minusBtn").addEventListener("click", () => {
+    location.href = "adjust.html";
+  });
+
+  loadSummary();
+
+  /* ===============================
+     ログアウト
+  ================================= */
+  const logoutBtn = document.getElementById("logout");
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
+      await supabase.auth.signOut();
+      location.replace("../login.html");
+    });
+  }
+</script>
+
+</body>
+</html>

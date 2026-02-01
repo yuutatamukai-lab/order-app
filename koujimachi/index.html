@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>発注　麹町</title>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: 12px;
+      line-height: 1.6;
+      font-size: 18px;
+    }
+
+    h1 { margin-bottom: 16px; }
+
+    button {
+      padding: 14px 18px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    #topMenu {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    #categoryButtons {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    #categoryButtons button.active {
+      background: #333;
+      color: #fff;
+    }
+
+    .qty-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .qty-control button {
+      width: 48px;
+      height: 48px;
+      font-size: 26px;
+      font-weight: bold;
+    }
+
+    .qty-control input {
+      width: 80px;
+      text-align: center;
+      font-size: 22px;
+    }
+
+    /* numberスピン削除 */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+    }
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    /* 発注日セレクトをタブレット向けに大きく */
+    #orderYear, #orderMonth, #orderDay {
+      font-size: 20px;
+      padding: 8px 12px;
+    }
+
+    #orderYear option, #orderMonth option, #orderDay option {
+      font-size: 20px;
+    }
+
+    .item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 8px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .item-name {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+
+    @media (min-width: 768px) {
+      body {
+        font-size: 20px;
+        padding: 24px;
+      }
+
+      button {
+        font-size: 22px;
+      }
+
+      .item-name {
+        font-size: 22px;
+      }
+    }
+
+    /* 上部の店舗名ナビを非表示（UI整理） */
+    #topMenu {
+      display: none;
+    }
+
+    /* ===== 仙石山と同じUIトーン ===== */
+
+    .page-title {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    #categoryButtons {
+      background: #b40000; /* PASCUCCI red */
+      padding: 16px;
+      border-radius: 14px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    #categoryButtons button {
+      background: #222;
+      color: #fff;
+      border: none;
+      padding: 18px;
+      font-size: 18px;
+      border-radius: 10px;
+    }
+
+    #categoryButtons button:hover {
+      background: #333;
+    }
+
+    #categoryButtons button.active {
+      background: #444;
+      color: #fff;
+      font-weight: 700;
+    }
+    /* 下部メニュー（発注履歴 / Standard 編集 / Logout） */
+    .bottom-menu {
+      display: flex;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .bottom-menu button {
+      flex: 1;
+      padding: 14px;
+      font-size: 16px;
+      border-radius: 10px;
+      background: #e6e6e6;
+      border: none;
+    }
+
+    .bottom-menu button:hover {
+      background: #dcdcdc;
+    }
+  </style>
+</head>
+
+<body>
+
+<nav id="topMenu">
+  <div id="storeName">店舗：</div> 
+</nav>
+
+<h1 class="page-title">ORDERS 麹町</h1>
+
+<div id="categoryButtons">
+    <button id="loadUsual">Standard</button>
+  <button data-category="C">Packaging</button>
+  <button data-category="A">Food</button>
+  <button data-category="B">Bakery,Dolce</button>
+</div>
+
+<!-- 発注日 -->
+<div style="display:flex; gap:24px; align-items:center; margin-bottom:24px;">
+  <strong>発注日：</strong>
+
+  <label>年
+    <select id="orderYear"></select>
+  </label>
+
+  <label>月
+    <select id="orderMonth"></select>
+  </label>
+
+  <label>日
+    <select id="orderDay"></select>
+  </label>
+</div>
+
+
+<div id="itemList">
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Lasagna</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Lasagna" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">vegitarian Lasagna</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="vegitarian Lasagna" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Parmigiana</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="parmigiana" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Pollo</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Pollo" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Patate</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Patate" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Pancetta</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Pancetta" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Funghi</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Funghi" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Costine</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Cosutine" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Carote</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Carote" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Cotoletta</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Cotoletta" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Filetto</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Filetto" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Pure Patata</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Pure Patata" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+    <div class="item-row" data-category="A">
+    <span class="item-name">Trippa</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Trippa" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Caponata</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Caponata" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Moscardini</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Moscardini" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Pure Ceci</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Pure Ceci" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Spaghetti</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Spaghetti" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Fusilli</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Fusilli" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Maccheroni</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Maccheroni" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Casareccie</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Casareccie" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Gramigna</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Gramigna" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Pizza生地</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Pizza生地" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Prosciutto Curdo</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Prosciutto Curdo" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Prosciutto Cotto</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Prosciutto Cotto" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Porchetta</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Porchetta" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+
+  <div class="item-row" data-category="B">
+    <span class="item-name">Bombolone Crema</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Bombolone Crema" data-category="B" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="B">
+    <span class="item-name">Bombolone Pisutacchio</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Bombolone Pisutacchio" data-category="B" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="B">
+    <span class="item-name">Bomboloncino</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Bomboloncino" data-category="B" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="B">
+    <span class="item-name">Cannolo</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Cannolo" data-category="B" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="B">
+    <span class="item-name">Ciamabella</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Ciamabella" data-category="B" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="B">
+    <span class="item-name">Raspberry Brownie</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Raspberry Brownie" data-category="B" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="B">
+    <span class="item-name">Short Cake</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Short Cake" data-category="B" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="B">
+    <span class="item-name">Chocolate Cookie</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Chocolate Cookie" data-category="B" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="B">
+    <span class="item-name">Carrot Cake Muffin</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Carrot Cake Muffin" data-category="B" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="B">
+    <span class="item-name">Matcha Chocolate Muffin</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Matcha Chocolate Muffin" data-category="B" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="B">
+    <span class="item-name">Tiramisu</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Tiramisu" data-category="B" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="B">
+    <span class="item-name">Tiramisu Pistacchio</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Tiramisu Pistacchio" data-category="B" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="B">
+    <span class="item-name">Cheese Cake</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Cheese Cake" data-category="B" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="B">
+    <span class="item-name">Blueberry Cheese Cake</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Blueberry Cheese Cake" data-category="B" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="B">
+    <span class="item-name">Budino</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Budino" data-category="B" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="B">
+    <span class="item-name">Panna Cotta</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Panna Cotta" data-category="B" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="B">
+    <span class="item-name">Pan Cake</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Pan Cake" data-category="B" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+
+  <div class="item-row" data-category="C">
+    <span class="item-name">Hot cap M</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Hot cap M" data-category="C" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="C">
+    <span class="item-name">Hot cap M Lid</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Hot cap M Lid" data-category="C" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="C">
+    <span class="item-name">Hot cap L</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Hot cap L" data-category="C" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="C">
+    <span class="item-name">Hot cap L Lid</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Hot cap L Lid" data-category="C" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="C">
+    <span class="item-name">Ice cap M</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Ice cap M" data-category="C" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="C">
+    <span class="item-name">Ice cap M Lid</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Ice cap M Lid" data-category="C" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="C">
+    <span class="item-name">Ice cap L</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Ice cap L" data-category="C" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="C">
+    <span class="item-name">Ice cap L Lid</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Ice cap L Lid" data-category="C" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="C">
+    <span class="item-name">Pudding Cup</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Pudding Cup " data-category="C" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="C">
+    <span class="item-name">Pudding Cup Lid</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Puddng cup Lid" data-category="C" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+  <div class="item-row" data-category="C">
+    <span class="item-name">Coffee sugar</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Coffee sugar" data-category="C" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="C">
+    <span class="item-name">Coffee sugar Large</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Coffee sugar Large" data-category="C" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="C">
+    <span class="item-name">Coffee suger Brown</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Coffee suger Brown" data-category="C" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="C">
+    <span class="item-name">PASCUCI seal</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="PASCUCI seal" data-category="C" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="C">
+    <span class="item-name">Cutlery Pouch White</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Cutlery Pouch White" data-category="C" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="C">
+    <span class="item-name">PASCUCCI paper bag</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="PASCUCCI paper bag" data-category="C" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="C">
+    <span class="item-name">Lunch mat</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Lunch mat" data-category="C" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="C">
+    <span class="item-name">Coffee beans</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" class="qty" data-item="Coffee beans" data-category="C" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  
+</div>
+
+<div style="margin-bottom:24px;">
+  <label style="display:block; font-weight:bold; margin-bottom:8px;">備考：</label>
+  <textarea id="orderNote" rows="3" style="width:100%; font-size:18px; padding:8px;"></textarea>
+</div>
+
+  <button id="submit">送信</button>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+/* ===============================
+   Supabase 初期化
+================================ */
+const supabase = createClient(
+  "https://ididxhgszvdvfyfzwfgm.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkaWR4aGdzenZkdmZ5Znp3ZmdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3Mzc5MzgsImV4cCI6MjA4MjMxMzkzOH0.ZVOS2nxT8KbCB7U5xL0DKy9DGj3KrjJU7AJkR0_b33g"
+);
+
+/* ===============================
+   認証チェック
+================================ */
+const { data } = await supabase.auth.getUser();
+
+if (!data.user) {
+  // ログインしてない人は入れない（強制的に login へ）
+  location.replace("../login.html");
+  throw new Error("not authenticated");
+}
+
+supabase.auth.onAuthStateChange((event) => {
+  if (event === "SIGNED_OUT") {
+    location.replace("/login.html");
+  }
+});
+
+// カテゴリー制御用の定数
+const ALLOWED_CATEGORIES = ["C","D","E"];
+
+const MACHINE_ID = "tablet-1";
+// 店舗ID（店舗ごとに変更する）
+const STORE_ID = "store_b"; // store_a / store_b / store_c
+// 店舗ID → 店舗名変換
+const STORE_NAME_MAP = {
+  store_a: "仙石山",
+  store_b: "麹町",
+  store_c: "西麻布"
+};
+
+// 店舗名表示
+const storeNameEl = document.getElementById("storeName");
+if (storeNameEl) {
+  storeNameEl.textContent = `店舗：${STORE_NAME_MAP[STORE_ID]}`;
+}
+
+/* ===============================
+   Standard（usual_orders）読み込み
+================================ */
+async function loadStandard() {
+  console.log("Standard load start");
+
+  const { data, error } = await supabase
+    .from("usual_orders")
+    .select("item, quantity")
+    .eq("store_id", STORE_ID);
+
+  if (error) {
+    console.error("Standard load error:", error);
+    alert("Standard の読み込みに失敗しました");
+    return;
+  }
+
+  console.log("Standard data:", data);
+
+  const map = {};
+  data.forEach(row => {
+    map[row.item] = row.quantity;
+  });
+
+  document.querySelectorAll("input.qty").forEach(input => {
+    const item = input.dataset.item;
+    input.value = map[item] ?? 0;
+  });
+}
+
+/* ===============================
+   発注日 select 取得
+================================ */
+const orderYear  = document.getElementById("orderYear");
+const orderMonth = document.getElementById("orderMonth");
+const orderDay   = document.getElementById("orderDay");
+
+/* ===============================
+   年・月・日 初期化
+================================ */
+const now = new Date();
+now.setDate(now.getDate() + 1);
+const thisYear = now.getFullYear();
+
+for (let y = thisYear - 1; y <= thisYear + 1; y++) {
+  const o = new Option(y, y);
+  if (y === thisYear) o.selected = true;
+  orderYear.add(o);
+}
+
+for (let m = 1; m <= 12; m++) {
+  const v = String(m).padStart(2, "0");
+  const o = new Option(m, v);
+  if (m === now.getMonth() + 1) o.selected = true;
+  orderMonth.add(o);
+}
+
+for (let d = 1; d <= 31; d++) {
+  const v = String(d).padStart(2, "0");
+  const o = new Option(d, v);
+  if (d === now.getDate()) o.selected = true;
+  orderDay.add(o);
+}
+
+/* ===============================
+   カテゴリー切り替え
+================================ */
+document.querySelectorAll("#categoryButtons button[data-category]").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll("#categoryButtons button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    const cat = btn.dataset.category;
+    document.querySelectorAll(".item-row").forEach(row => {
+      row.style.display = row.dataset.category === cat ? "" : "none";
+    });
+  };
+});
+
+// 初期表示 C
+document.querySelector('[data-category="A"]').click();
+
+/* ===============================
+   ＋ / − ボタン
+================================ */
+document.querySelectorAll(".qty-control").forEach(c => {
+  const input = c.querySelector(".qty");
+  c.querySelector(".plus").onclick  = () => input.value = Number(input.value) + 1;
+  c.querySelector(".minus").onclick = () => input.value = Math.max(0, Number(input.value) - 1);
+});
+
+/* ===============================
+   送信
+================================ */
+document.getElementById("submit").onclick = async () => {
+  const y = orderYear.value;
+  const m = orderMonth.value;
+  const d = orderDay.value;
+
+  if (!y || !m || !d) {
+    alert("発注日を選択してください");
+    return;
+  }
+
+  const orderDate = `${y}-${m}-${d}`;
+  const note = document.getElementById("orderNote").value || null;
+  const rows = [];
+
+  document.querySelectorAll(".qty").forEach(i => {
+    const qty = Number(i.value);
+    if (qty > 0) {
+      rows.push({
+        store_id: STORE_ID,
+        item: i.dataset.item,
+        category: i.dataset.category,
+        quantity: qty,
+        machine_id: MACHINE_ID,
+        order_date: orderDate,
+        note: note
+      });
+    }
+  });
+
+  if (!rows.length) {
+    alert("数量を入力してください");
+    return;
+  }
+
+  const { error } = await supabase.from("orders").insert(rows);
+  if (error) {
+    console.error(error);
+    alert("保存失敗");
+  } else {
+    alert("保存しました");
+    location.href = "/koujimachi/history.html";
+    document.querySelectorAll(".qty").forEach(i => i.value = 0);
+    document.getElementById("orderNote").value = "";
+  }
+};
+
+/* ===============================
+   Standard（usual_orders）ボタン
+================================ */
+const loadUsualBtn = document.getElementById("loadUsual");
+if (loadUsualBtn) {
+  loadUsualBtn.onclick = loadStandard;
+}
+</script>
+
+</div>
+
+<div class="bottom-menu">
+  <button onclick="location.href='/koujimachi/history.html'">発注履歴</button>
+  <button onclick="location.href='/koujimachi/standard.html'">Standard 編集</button>
+  <button id="logout">Logout</button>
+</div>
+</body>
+</html>

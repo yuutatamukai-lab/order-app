@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>PASCUCCI ログイン</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: sans-serif;
+      background: #e0e0e0;
+    }
+
+    .container {
+      width: 320px;
+      text-align: center;
+      background: #fff;
+      padding: 40px 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .company {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #c40000;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 32px;
+    }
+
+    input {
+      width: 100%;
+      font-size: 18px;
+      padding: 12px;
+      margin-bottom: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      font-size: 20px;
+      padding: 14px;
+      border-radius: 8px;
+      border: none;
+      background: #2f6f4e; /* 落ち着いた緑 */
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button:active {
+      opacity: 0.8;
+    }
+
+    #msg {
+      margin-top: 16px;
+      color: #d00;
+    }
+
+    .hint {
+      margin-bottom: 16px;
+      font-size: 12px;
+      color: #999;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="company">PASCUCCI</div>
+    <div class="subtitle">ログイン</div>
+
+    <input id="email" placeholder="メールアドレス">
+    <input id="password" type="password" placeholder="パスワード">
+    <div class="hint">
+      仮アカウント例：<br>
+      メール：store01@app.local<br>
+      パスワード：store01pass
+    </div>
+
+    <button id="loginBtn">ログイン</button>
+
+    <div style="margin-top:12px; font-size:14px;">
+      <a href="reset.html" style="color:#2f6f4e; text-decoration:none;">
+        メールアドレス／パスワードを変更
+      </a>
+    </div>
+
+    <div id="msg"></div>
+  </div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const supabase = createClient(
+  "https://ididxhgszvdvfyfzwfgm.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkaWR4aGdzenZkdmZ5Znp3ZmdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3Mzc5MzgsImV4cCI6MjA4MjMxMzkzOH0.ZVOS2nxT8KbCB7U5xL0DKy9DGj3KrjJU7AJkR0_b33g"
+);
+
+document.getElementById("loginBtn").onclick = async () => {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    document.getElementById("msg").textContent = "ログインに失敗しました";
+  } else {
+    location.href = "loading.html";
+  }
+};
+</script>
+</body>
+</html>
