@@ -170,7 +170,7 @@
   </style>
 </head>
 
-<body>
+<body style="display:none;">
 
 <nav id="topMenu">
   <div id="storeName">店舗：</div> 
@@ -768,19 +768,18 @@ const supabase = createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkaWR4aGdzenZkdmZ5Znp3ZmdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3Mzc5MzgsImV4cCI6MjA4MjMxMzkzOH0.ZVOS2nxT8KbCB7U5xL0DKy9DGj3KrjJU7AJkR0_b33g"
 );
 
-/* ===============================
-   認証チェック
-================================ */
-const { data } = await supabase.auth.getUser();
+// ===== 認証チェック（ページ読み込み前に強制判定）=====
+const { data: { session } } = await supabase.auth.getSession();
 
-if (!data.user) {
-  // ログインしてない人は入れない（強制的に login へ）
-  location.replace("../login.html");
-  throw new Error("not authenticated");
+if (!session) {
+  location.replace("/login.html");
+  throw new Error("Not logged in");
 }
 
-supabase.auth.onAuthStateChange((event) => {
-  if (event === "SIGNED_OUT") {
+document.body.style.display = "block";
+
+supabase.auth.onAuthStateChange((_event, newSession) => {
+  if (!newSession) {
     location.replace("/login.html");
   }
 });
@@ -938,7 +937,7 @@ document.getElementById("submit").onclick = async () => {
     alert("保存失敗");
   } else {
     alert("保存しました");
-    location.href = "/koujimachi/history.html";
+    location.replace("/koujimachi/history.html");
     document.querySelectorAll(".qty").forEach(i => i.value = 0);
     document.getElementById("orderNote").value = "";
   }
@@ -951,14 +950,35 @@ const loadUsualBtn = document.getElementById("loadUsual");
 if (loadUsualBtn) {
   loadUsualBtn.onclick = loadStandard;
 }
+
+// ===== 下部メニュー制御（即時バインド）=====
+const historyBtn  = document.getElementById("historyBtn");
+const standardBtn = document.getElementById("standardBtn");
+const logoutBtn   = document.getElementById("logoutBtn");
+
+if (historyBtn) {
+  historyBtn.onclick = () => location.replace("/koujimachi/history.html");
+}
+
+if (standardBtn) {
+  standardBtn.onclick = () => location.replace("/koujimachi/standard.html");
+}
+
+if (logoutBtn) {
+  logoutBtn.onclick = async () => {
+    await supabase.auth.signOut();
+    location.replace("/login.html");
+  };
+}
+
 </script>
 
 </div>
 
 <div class="bottom-menu">
-  <button onclick="location.href='/koujimachi/history.html'">発注履歴</button>
-  <button onclick="location.href='/koujimachi/standard.html'">Standard 編集</button>
-  <button id="logout">Logout</button>
+  <button id="historyBtn">発注履歴</button>
+  <button id="standardBtn">Standard 編集</button>
+  <button id="logoutBtn">Logout</button>
 </div>
-</body>
+  </body>
 </html>

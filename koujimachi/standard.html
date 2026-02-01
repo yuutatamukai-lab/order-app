@@ -103,14 +103,14 @@
 const { data } = await supabase.auth.getUser();
 
 if (!data.user) {
-  location.replace("../login.html");
+  location.replace("/login.html");
   throw new Error("not authenticated");
 }
 
 // ログアウト検知（他タブ・セッション切れ対策）
 supabase.auth.onAuthStateChange((event) => {
   if (event === "SIGNED_OUT") {
-    location.replace("../login.html");
+    location.replace("/login.html");
   }
 });
 
