@@ -2,58 +2,62 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>PASCUCCI ログイン</title>
 
   <style>
     body {
       margin: 0;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
       font-family: sans-serif;
       background: #e0e0e0;
+      padding: 16px;
+      box-sizing: border-box;
     }
 
     .container {
-      width: 320px;
+      width: 100%;
+      max-width: 420px;
       text-align: center;
       background: #fff;
-      padding: 40px 24px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 48px 24px;
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
     }
 
     .company {
-      font-size: 32px;
+      font-size: 40px;
       font-weight: bold;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       color: #c40000;
     }
 
     .subtitle {
-      font-size: 16px;
+      font-size: 20px;
       color: #666;
-      margin-bottom: 32px;
+      margin-bottom: 36px;
     }
 
     input {
       width: 100%;
-      font-size: 18px;
-      padding: 12px;
-      margin-bottom: 16px;
-      border-radius: 8px;
+      font-size: 20px;
+      padding: 18px;
+      margin-bottom: 20px;
+      border-radius: 10px;
       border: 1px solid #ccc;
       box-sizing: border-box;
     }
 
     button {
       width: 100%;
-      font-size: 20px;
-      padding: 14px;
-      border-radius: 8px;
+      font-size: 22px;
+      padding: 20px;
+      border-radius: 10px;
       border: none;
-      background: #2f6f4e; /* 落ち着いた緑 */
+      background: #2f6f4e;
       color: #fff;
       cursor: pointer;
     }
@@ -108,6 +112,11 @@ const supabase = createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkaWR4aGdzenZkdmZ5Znp3ZmdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3Mzc5MzgsImV4cCI6MjA4MjMxMzkzOH0.ZVOS2nxT8KbCB7U5xL0DKy9DGj3KrjJU7AJkR0_b33g"
 );
 
+const { data: sessionData } = await supabase.auth.getSession();
+if (sessionData.session) {
+  location.replace("/loading.html");
+}
+
 document.getElementById("loginBtn").onclick = async () => {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
@@ -120,7 +129,7 @@ document.getElementById("loginBtn").onclick = async () => {
   if (error) {
     document.getElementById("msg").textContent = "ログインに失敗しました";
   } else {
-    location.href = "loading.html";
+    location.replace("/loading.html");
   }
 };
 </script>
