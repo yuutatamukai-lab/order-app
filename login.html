@@ -85,8 +85,8 @@
     <div class="company">PASCUCCI</div>
     <div class="subtitle">ログイン</div>
 
-    <input id="email" placeholder="メールアドレス">
-    <input id="password" type="password" placeholder="パスワード">
+    <input id="email" type="email" inputmode="email" autocomplete="username" placeholder="メールアドレス">
+    <input id="password" type="password" autocomplete="current-password" placeholder="パスワード">
     <div class="hint">
       仮アカウント例：<br>
       メール：store01@app.local<br>
@@ -118,8 +118,8 @@ if (sessionData.session) {
 }
 
 document.getElementById("loginBtn").onclick = async () => {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email = document.getElementById("email").value.trim().toLowerCase();
+  const password = document.getElementById("password").value.trim();
 
   const { error } = await supabase.auth.signInWithPassword({
     email,
