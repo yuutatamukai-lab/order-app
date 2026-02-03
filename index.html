@@ -182,22 +182,6 @@
 </head>
 
 <body>
-<script>
-  // 未ログインならこのページを一切表示せず login.html へ強制遷移
-  (function () {
-    try {
-      const token =
-        localStorage.getItem("supabase.auth.token") ||
-        sessionStorage.getItem("supabase.auth.token");
-
-      if (!token) {
-        location.replace("../login.html");
-      }
-    } catch (e) {
-      location.replace("../login.html");
-    }
-  })();
-</script>
 <div class="main">
 
 <div id="topMenu">
@@ -699,7 +683,7 @@ const supabase = createClient(
 const { data } = await supabase.auth.getSession();
 
 if (!data.session) {
-  location.replace("../login.html");
+  location.replace("./login.html");
   return; // これ以上このページを動かさない
 }
 
