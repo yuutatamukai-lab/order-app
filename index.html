@@ -3,6 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self' https://esm.sh https://ididxhgszvdvfyfzwfgm.supabase.co;
+    script-src 'self' https://esm.sh 'unsafe-inline';
+    connect-src https://ididxhgszvdvfyfzwfgm.supabase.co;
+    img-src 'self' data:;
+    style-src 'self' 'unsafe-inline';
+    frame-ancestors 'none';
+    base-uri 'self';
+    form-action 'self';
+  ">
+  <meta name="referrer" content="no-referrer">
   <title>発注 西麻布</title>
 
   <style>
@@ -654,11 +665,14 @@
 </div>
 
 <script type="module">
+// JSスコープを閉じてグローバル汚染を防止
+(() => {
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 /* ===============================
    Supabase 初期化
 ================================ */
+// Supabaseキーをグローバルに露出させないためのスコープ保護
 const supabase = createClient(
   "https://ididxhgszvdvfyfzwfgm.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkaWR4aGdzenZkdmZ5Znp3ZmdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3Mzc5MzgsImV4cCI6MjA4MjMxMzkzOH0.ZVOS2nxT8KbCB7U5xL0DKy9DGj3KrjJU7AJkR0_b33g"
@@ -682,7 +696,9 @@ location.replace("../login.html");
 // ===============================
 document.getElementById("logoutBtn").addEventListener("click", async () => {
   await supabase.auth.signOut();
-location.replace("../login.html");
+  sessionStorage.clear();
+  localStorage.clear();
+  location.replace("../login.html");
 });
 
 // カテゴリー制御用の定数
@@ -706,8 +722,6 @@ document.getElementById("storeName").textContent =
    Standard（usual_orders）読み込み
 ================================ */
 async function loadStandard() {
-  console.log("Standard load start");
-
   const { data, error } = await supabase
     .from("usual_orders")
     .select("item, quantity")
@@ -718,8 +732,6 @@ async function loadStandard() {
     alert("Standard の読み込みに失敗しました");
     return;
   }
-
-  console.log("Standard data:", data);
 
   const map = {};
   data.forEach(row => {
@@ -836,7 +848,8 @@ document.getElementById("submit").onclick = async () => {
     alert("保存失敗");
   } else {
     alert("保存しました");
-location.href = "./history.html";
+    sessionStorage.clear();
+    location.href = "./history.html";
     document.querySelectorAll(".qty").forEach(i => i.value = 0);
     document.getElementById("orderNote").value = "";
   }
@@ -849,6 +862,7 @@ const loadUsualBtn = document.getElementById("loadUsual");
 if (loadUsualBtn) {
   loadUsualBtn.onclick = loadStandard;
 }
+})();
 </script>
 
 </div>
