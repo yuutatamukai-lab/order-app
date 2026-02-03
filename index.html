@@ -498,10 +498,10 @@
   </div>
 
   <div class="item-row" data-category="C">
-    <span class="item-name">Hot cap M Lid</span>
+    <span class="item-name">Hot cap M lid</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Hot cap M Lid" data-category="C" value="0">
+      <input type="number" class="qty" data-item="Hot cap M lid" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -516,10 +516,10 @@
   </div>
 
   <div class="item-row" data-category="C">
-    <span class="item-name">Hot cap L Lid</span>
+    <span class="item-name">Hot cap L lid</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Hot cap L Lid" data-category="C" value="0">
+      <input type="number" class="qty" data-item="Hot cap L lid" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -534,10 +534,10 @@
   </div>
 
   <div class="item-row" data-category="C">
-    <span class="item-name">Ice cap M Lid</span>
+    <span class="item-name">Ice cap M lid</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Ice cap M Lid" data-category="C" value="0">
+      <input type="number" class="qty" data-item="Ice cap M lid" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -552,10 +552,10 @@
   </div>
 
   <div class="item-row" data-category="C">
-    <span class="item-name">Ice cap L Lid</span>
+    <span class="item-name">Ice cap L lid</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Ice cap L Lid" data-category="C" value="0">
+      <input type="number" class="qty" data-item="Ice cap L lid" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -665,10 +665,9 @@
 </div>
 
 <script type="module">
-// JSスコープを閉じてグローバル汚染を防止
-(() => {
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+(() => {
 /* ===============================
    Supabase 初期化
 ================================ */
@@ -786,10 +785,8 @@ document.querySelectorAll("#categoryButtons button[data-category]").forEach(btn 
     document.querySelectorAll("#categoryButtons button").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
 
-    const cat = btn.dataset.category;
-    document.querySelectorAll(".item-row").forEach(row => {
-      row.style.display = row.dataset.category === cat ? "" : "none";
-    });
+    const cats = btn.dataset.category.split(",");    document.querySelectorAll(".item-row").forEach(row => {
+    row.style.display = cats.includes(row.dataset.category) ? "" : "none";    });
   };
 });
 
