@@ -35,45 +35,40 @@ const supabase = createClient(
 );
 
 /* ===============================
-   認証チェック
+   認証チェック（セッション復元を待つ）
 ================================ */
-const { data } = await supabase.auth.getUser();
+const { data } = await supabase.auth.getSession();
 
-if (!data.user) {
-  // 未ログインならログイン画面へ
-  location.href = "/login.html";
-  throw new Error("not authenticated");
+if (!data.session) {
+  location.replace("./login.html");
+  return;
 }
 
-/* ===============================
-   店舗・役割の振り分け（仮）
-   ※今は email で判定する
-================================ */
-const email = data.user.email;
+const email = data.session.user.email;
 
 // 仙石山店
 if (email === "sengokuyama@app.local") {
-  location.href = "sengokuyama/index.html";
+  location.replace("./sengokuyama/index.html");
 }
 // 麹町店
-else if (email === "/koujimachi@app.local") {
-  location.href = "/koujimachi/index.html";
+else if (email === "koujimachi@app.local") {
+  location.replace("./koujimachi/index.html");
 }
 // 西麻布店
-else if (email === "/nisiazabu@app.local") {
-  location.href = "/nisiazabu/index.html";
+else if (email === "nisiazabu@app.local") {
+  location.replace("./nisiazabu/index.html");
 }
 // トータル表示、マイナス処理
-else if (email === "/master@app.local"){
-  location.href = "/master/index.html";
+else if (email === "master@app.local"){
+  location.replace("./master/index.html");
 }
 //　セントラルキッチン
-else if (email === "/central_kichen@app.local"){
-  location.href = "/central_kichen/index.html";
+else if (email === "central_kichen@app.local"){
+  location.replace("./central_kichen/index.html");
 }
 //　倉庫
-else if (email === "/storage_shed@app.local"){
-  location.href = "/storage_shed/index.html";
+else if (email === "storage_shed@app.local"){
+  location.replace("./storage_shed/index.html");
 }
 
 </script>
