@@ -182,6 +182,22 @@
 </head>
 
 <body>
+<script>
+  // 未ログインならこのページを一切表示せず login.html へ強制遷移
+  (function () {
+    try {
+      const token =
+        localStorage.getItem("supabase.auth.token") ||
+        sessionStorage.getItem("supabase.auth.token");
+
+      if (!token) {
+        location.replace("../login.html");
+      }
+    } catch (e) {
+      location.replace("../login.html");
+    }
+  })();
+</script>
 <div class="main">
 
 <div id="topMenu">
