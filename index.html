@@ -683,9 +683,8 @@ const supabase = createClient(
 const { data } = await supabase.auth.getSession();
 
 if (!data.session) {
-  // 未ログインなら login へ
-location.replace("../login.html");
-  throw new Error("not authenticated");
+  location.replace("../login.html");
+  return; // これ以上このページを動かさない
 }
 
 // ログイン済みならそのまま業務画面を表示
