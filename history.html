@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>発注履歴（店舗別）</title>
+  <style>
+    :root { --safe-bottom: env(safe-area-inset-bottom); }
+    * { -webkit-tap-highlight-color: transparent; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans JP", sans-serif; margin: 12px; }
+
+    h1 { font-size: 20px; margin-bottom: 12px; }
+
+    #backToOrder {
+      width: 100%;
+      font-size: 18px;
+      padding: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #fff;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 16px;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: left;
+      word-break: break-word;
+    }
+
+    th { background: #f2f2f2; }
+
+    button { touch-action: manipulation; }
+
+    @media (max-width: 767px) {
+      body { padding-bottom: calc(80px + var(--safe-bottom)); }
+    }
+  </style>
+</head>
+<body>
+
+<h1 id="pageTitle">発注履歴</h1>
+<div style="margin-bottom:16px;">
+  <button id="backToOrder" style="font-size:18px;padding:10px 16px;">発注画面に戻る</button>
+</div>
+<div id="historyContainer"></div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const supabase = createClient(
+  "https://ididxhgszvdvfyfzwfgm.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkaWR4aGdzenZkdmZ5Znp3ZmdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3Mzc5MzgsImV4cCI6MjA4MjMxMzkzOH0.ZVOS2nxT8KbCB7U5xL0DKy9DGj3KrjJU7AJkR0_b33g"
+);
+
+/* ===============================
+   認証チェック（直URL防止）
+=============================== */
+const { data } = await supabase.auth.getUser();
+
+if (!data.user) {
+  location.replace("./login.html");
+  throw new Error("not authenticated");
+}
+
+// ログアウト検知（他タブ・セッション切れ対策）
+supabase.auth.onAuthStateChange((event) => {
+  if (event === "SIGNED_OUT") {
+    location.replace("./login.html");
+  }
+});
+
+/* 店舗ID（仙石山専用・この history.html は store_a 固定） */
+const STORE_ID = "store_a";
+const STORE_NAMES = {
+  store_a: "仙石山",
+  store_b: "店舗B",
+  store_c: "店舗C"
+};
+document.getElementById("pageTitle").textContent =
+  `発注履歴（${STORE_NAMES[STORE_ID] ?? STORE_ID}）`;
+
+const container = document.getElementById("historyContainer");
+
+document.getElementById("backToOrder").addEventListener("click", () => {
+  window.location.href = "./index.html";
+});
+
+async function loadHistory() {
+  const { data, error } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("store_id", STORE_ID)
+
+  if (error) {
+    console.error(error);
+    alert("履歴の読み込みに失敗しました");
+    return;
+  }
+
+  container.innerHTML = "";
+
+  // 日付ごとにまとめる
+  const grouped = {};
+  data.forEach(row => {
+    const baseDate = row.order_date ?? row.created_at;
+    const date = new Date(baseDate)
+      .toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" });
+    if (!grouped[date]) grouped[date] = [];
+    grouped[date].push(row);
+  });
+
+  // 表示
+  Object.keys(grouped).forEach((date, index) => {
+    const section = document.createElement("div");
+    section.style.marginBottom = "20px";
+
+    const header = document.createElement("button");
+    header.textContent = date;
+    header.style.width = "100%";
+    header.style.fontSize = "18px";
+    header.style.padding = "10px";
+    header.style.textAlign = "left";
+    header.style.background = "#f9f9f9";
+    header.style.border = "1px solid #ddd";
+
+    const table = document.createElement("table");
+    table.border = "1";
+    table.style.width = "100%";
+    table.style.marginTop = "5px";
+    table.style.display = index === 0 ? "table" : "none";
+
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>品目</th>
+          <th>数量</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    `;
+
+    const tbody = table.querySelector("tbody");
+
+    grouped[date].forEach(row => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${row.item}</td>
+        <td>${row.quantity ?? ""}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    header.addEventListener("click", () => {
+      table.style.display = table.style.display === "none" ? "table" : "none";
+    });
+
+    section.appendChild(header);
+    section.appendChild(table);
+    container.appendChild(section);
+  });
+}
+
+loadHistory();
+</script>
+</body>
+</html>

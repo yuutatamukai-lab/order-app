@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Standard List 編集</title>
+  <style>
+    :root { --safe-bottom: env(safe-area-inset-bottom); }
+    * { -webkit-tap-highlight-color: transparent; }
+    button { touch-action: manipulation; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: 12px;
+      line-height: 1.6;
+      font-size: 18px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border-bottom: 1px solid #ccc;
+      padding: 12px 8px;
+      text-align: left;
+      font-size: 18px;
+    }
+    input[type="number"] {
+      width: 80px;
+      font-size: 22px;
+      padding: 6px;
+      -moz-appearance: textfield;
+    }
+    button {
+      padding: 14px 18px;
+      font-size: 20px;
+      margin-right: 8px;
+    }
+
+    /* 標準の▲▼（スピンボタン）を非表示にする */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .qty-btn {
+      width: 48px;
+      height: 48px;
+      font-size: 26px;
+      font-weight: bold;
+    }
+    .qty-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    @media (min-width: 768px) {
+      body {
+        font-size: 20px;
+        padding: 24px;
+      }
+
+      th, td {
+        font-size: 20px;
+      }
+
+      button {
+        font-size: 22px;
+      }
+    }
+    @media (max-width: 767px) {
+      body { padding-bottom: calc(100px + var(--safe-bottom)); }
+      #save, #backToOrder {
+        width: 100%;
+        margin-bottom: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<h1>Standard List 編集</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>品目</th>
+      <th>標準数量</th>
+    </tr>
+  </thead>
+  <tbody id="listBody">
+    <!-- JSで生成 -->
+  </tbody>
+</table>
+
+<button id="save">保存</button>
+<button id="backToOrder">発注画面へ戻る</button>
+
+<script type="module">
+  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+  const supabase = createClient(
+    "https://ididxhgszvdvfyfzwfgm.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkaWR4aGdzenZkdmZ5Znp3ZmdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3Mzc5MzgsImV4cCI6MjA4MjMxMzkzOH0.ZVOS2nxT8KbCB7U5xL0DKy9DGj3KrjJU7AJkR0_b33g"
+  );
+
+  /* ===============================
+   認証チェック（直URL防止）
+=============================== */
+const { data } = await supabase.auth.getUser();
+
+if (!data.user) {
+  location.replace("./login.html");
+  throw new Error("not authenticated");
+}
+
+// ログアウト検知（他タブ・セッション切れ対策）
+supabase.auth.onAuthStateChange((event) => {
+  if (event === "SIGNED_OUT") {
+    location.replace("./login.html");
+  }
+});
+
+  const params = new URLSearchParams(location.search);
+  const STORE_ID = params.get("store") || "store_a";
+
+  const MACHINE_ID = "tablet-1";
+  const tbody = document.getElementById("listBody");
+
+  // 🔽 order.html と同じ商品一覧を書く
+  const ITEMS = [
+    "Bombolone Crema",
+    "Bombolone Pisutacchio",
+    "Bomboloncino",
+    "Cannolo",
+    "Ciamabella"
+  ];
+
+  async function load() {
+    tbody.innerHTML = "";
+
+    // 既存の Standard List を取得（数量だけ）
+const { data, error } = await supabase
+  .from("usual_orders")
+  .select("item, quantity")
+  .eq("store_id", STORE_ID);
+
+if (error) {
+  console.error("Supabase error:", error);
+  alert(error.message);
+  return;
+}
+
+const map = {};
+
+// ★ここが重要
+if (Array.isArray(data)) {
+  data.forEach(row => {
+    map[row.item] = row.quantity;
+  });
+}
+
+    // 商品をすべて表示
+    ITEMS.forEach(item => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${item}</td>
+        <td>
+          <div class="qty-wrap">
+            <button type="button" class="qty-btn down">−</button>
+            <input
+              type="number"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              min="0"
+              step="1"
+              value="${map[item] ?? 0}"
+              data-item="${item}">
+            <button type="button" class="qty-btn up">＋</button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  let saving = false;
+  document.getElementById("save").addEventListener("click", async () => {
+    if (saving) return;
+    saving = true;
+    const inputs = document.querySelectorAll("input[data-item]");
+    const rows = [];
+
+    inputs.forEach(input => {
+      const qty = Number(input.value);
+      if (qty > 0) {
+        rows.push({
+          store_id: STORE_ID,
+          item: input.dataset.item,
+          quantity: qty
+        });
+      }
+    });
+
+    // 既存削除 → 再保存
+    const delResult = await supabase
+      .from("usual_orders")
+      .delete()
+      .eq("store_id", STORE_ID);
+
+    if (delResult.error) {
+      saving = false;
+      alert("削除失敗");
+      console.error(delResult.error);
+      return;
+    }
+
+    if (rows.length > 0) {
+      const { error } = await supabase
+        .from("usual_orders")
+        .insert(rows);
+      if (error) {
+        saving = false;
+        alert("保存失敗");
+        console.error(error);
+        return;
+      }
+    }
+
+    alert("Standard List を保存しました");
+    saving = false;
+  });
+
+  tbody.addEventListener("click", (e) => {
+    if (e.target.classList.contains("up") || e.target.classList.contains("down")) {
+      const input = e.target.parentElement.querySelector("input");
+      let value = Number(input.value) || 0;
+      if (e.target.classList.contains("up")) value++;
+      if (e.target.classList.contains("down") && value > 0) value--;
+      input.value = value;
+    }
+  });
+
+  document.getElementById("backToOrder").addEventListener("click", () => {
+    location.href = `index.html?store=${STORE_ID}`;
+  });
+
+  load();
+
+</script>
+
+</body>
+</html>
