@@ -112,9 +112,22 @@ const supabase = createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkaWR4aGdzenZkdmZ5Znp3ZmdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3Mzc5MzgsImV4cCI6MjA4MjMxMzkzOH0.ZVOS2nxT8KbCB7U5xL0DKy9DGj3KrjJU7AJkR0_b33g"
 );
 
+function redirectByStore(email) {
+  const id = email.split("@")[0];
+
+  // 店舗ごとの振り分け
+  if (id.startsWith("store01")) {
+    location.replace("/nisiazabu.html");
+  } else if (id.startsWith("store02")) {
+    location.replace("/roppongi.html");
+  } else {
+    location.replace("/index.html"); // 予備
+  }
+}
+
 const { data: sessionData } = await supabase.auth.getSession();
-if (sessionData.session) {
-  location.replace("/loading.html");
+if (sessionData.session && sessionData.session.user?.email) {
+  redirectByStore(sessionData.session.user.email);
 }
 
 document.getElementById("loginBtn").onclick = async () => {
@@ -129,7 +142,7 @@ document.getElementById("loginBtn").onclick = async () => {
   if (error) {
     document.getElementById("msg").textContent = "ログインに失敗しました";
   } else {
-    location.replace("/loading.html");
+    redirectByStore(email);
   }
 };
 </script>
