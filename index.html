@@ -683,11 +683,16 @@ const supabase = createClient(
 /* ===============================
    認証チェック（ログイン済のみ許可）
 ================================ */
-const { data } = await supabase.auth.getSession();
+const { data: sessionData } = await supabase.auth.getSession();
 
-if (!data.session) {
-  location.replace("./login.html");
-  return; // これ以上このページを動かさない
+if (!sessionData.session) {
+  // セッションが復元される前に判定されるケース対策
+  const { data: userData } = await supabase.auth.getUser();
+
+  if (!userData.user) {
+    location.replace("./login.html");
+    return; // 未ログインはここで止める
+  }
 }
 
 // ログイン済みならそのまま業務画面を表示
@@ -699,7 +704,7 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
   await supabase.auth.signOut();
   sessionStorage.clear();
   localStorage.clear();
-  location.replace("../login.html");
+  location.replace("./login.html");
 });
 
 // カテゴリー制御用の定数
