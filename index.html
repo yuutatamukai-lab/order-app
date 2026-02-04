@@ -3,21 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <meta http-equiv="Content-Security-Policy" content="
-    default-src 'self';
-    script-src 'self' https://esm.sh 'unsafe-inline';
-    style-src 'self' 'unsafe-inline';
-    img-src 'self' data:;
-    connect-src
-      https://ididxhgszvdvfyfzwfgm.supabase.co
-      https://*.supabase.co
-      wss://*.supabase.co;
-    frame-ancestors 'none';
-    base-uri 'self';
-    form-action 'self';
-  ">
-  <meta name="referrer" content="no-referrer">
-  <title>発注 西麻布</title>
+  <title>発注　仙石山</title>
 
   <style>
     :root {
@@ -26,6 +12,10 @@
 
     * {
       -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      touch-action: manipulation;
     }
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -188,27 +178,18 @@
     .bottom-menu button:hover {
       background: #dcdcdc;
     }
-
     /* ===== モバイル運用対策 ===== */
-
-    /* スクロール中の誤タップ防止 */
-    button {
-      touch-action: manipulation;
-    }
-
-    /* 下部メニューをモバイルで固定 */
     @media (max-width: 767px) {
       .bottom-menu {
         position: sticky;
         bottom: 0;
         background: #fff;
         padding-bottom: calc(12px + var(--safe-bottom));
-        margin-top: 24px;
         z-index: 10;
       }
 
       body {
-        padding-bottom: calc(120px + var(--safe-bottom));
+        padding-bottom: calc(140px + var(--safe-bottom));
       }
     }
   </style>
@@ -220,13 +201,13 @@
 <div id="topMenu">
   <span id="storeName"></span>
 </div>
-<h1 class="page-title">ORDERS 西麻布</h1>
+<h1 class="page-title">ORDERS 仙石山</h1>
 
 <div id="categoryButtons">
     <button id="loadUsual">Standard</button>
   <button data-category="C">Packaging</button>
-  <button data-category="A,D">Food</button>
-  <button data-category="B,E">Bakery,Dolce</button>
+  <button data-category="A">Food</button>
+  <button data-category="B">Bakery,Dolce</button>
 </div>
 
 <!-- 発注日 -->
@@ -259,10 +240,10 @@
   </div>
 
   <div class="item-row" data-category="A">
-    <span class="item-name">Vegetarian Lasagna</span>
+    <span class="item-name">vegitarian Lasagna</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Vegetarian Lasagna" data-category="A" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="vegitarian Lasagna" data-category="A" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -271,34 +252,179 @@
     <span class="item-name">Parmigiana</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Parmigiana" data-category="A" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="parmigiana" data-category="A" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
 
-  <div class="item-row" data-category="D">
-    <span class="item-name">Pizzetta</span>
+  <div class="item-row" data-category="A">
+    <span class="item-name">Pollo</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Pizzetta" data-category="D" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Pollo" data-category="A" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
 
-  <div class="item-row" data-category="D">
-    <span class="item-name">Focaccia</span>
+  <div class="item-row" data-category="A">
+    <span class="item-name">Patate</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Focaccia" data-category="D" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Patate" data-category="A" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
 
-  <div class="item-row" data-category="D">
-    <span class="item-name">Colnetto</span>
+  <div class="item-row" data-category="A">
+    <span class="item-name">Pancetta</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Colnetto" data-category="D" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Pancetta" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Funghi</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Funghi" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Costine</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Cosutine" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Carote</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Carote" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Cotoletta</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Cotoletta" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Filetto</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Filetto" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Pure Patata</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Pure Patata" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+    <div class="item-row" data-category="A">
+    <span class="item-name">Trippa</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Trippa" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Caponata</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Caponata" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Moscardini</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Moscardini" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Pure Ceci</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Pure Ceci" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Spaghetti</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Spaghetti" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Fusilli</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Fusilli" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Maccheroni</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Maccheroni" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Casareccie</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Casareccie" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Gramigna</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Gramigna" data-category="A" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+
+  <div class="item-row" data-category="A">
+    <span class="item-name">Pizza生地</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Pizza生地" data-category="A" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -322,19 +448,19 @@
   </div>
 
   <div class="item-row" data-category="D">
-    <span class="item-name">Prosciutto Cotto small size</span>
+    <span class="item-name">Prosciutto Cotto</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Prosciutto Cotto small size" data-category="D" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Prosciutto Cotto" data-category="D" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
 
   <div class="item-row" data-category="D">
-    <span class="item-name">Porchetta small size</span>
+    <span class="item-name">Porchetta</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Porchetta small size" data-category="D" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Porchetta" data-category="D" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -512,6 +638,15 @@
   </div>
 
   <div class="item-row" data-category="B">
+    <span class="item-name">Frozen Cornetto</span>
+    <div class="qty-control">
+      <button class="minus">−</button>
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Frozen Cornetto" data-category="B" value="0">
+      <button class="plus">＋</button>
+    </div>
+  </div>
+
+  <div class="item-row" data-category="B">
     <span class="item-name">Pan Cake</span>
     <div class="qty-control">
       <button class="minus">−</button>
@@ -531,10 +666,10 @@
   </div>
 
   <div class="item-row" data-category="C">
-    <span class="item-name">Hot cap M lid</span>
+    <span class="item-name">Hot cap M Lid</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Hot cap M lid" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Hot cap M Lid" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -549,10 +684,10 @@
   </div>
 
   <div class="item-row" data-category="C">
-    <span class="item-name">Hot cap L lid</span>
+    <span class="item-name">Hot cap L Lid</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Hot cap L lid" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Hot cap L Lid" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -567,10 +702,10 @@
   </div>
 
   <div class="item-row" data-category="C">
-    <span class="item-name">Ice cap M lid</span>
+    <span class="item-name">Ice cap M Lid</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Ice cap M lid" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Ice cap M Lid" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -585,10 +720,10 @@
   </div>
 
   <div class="item-row" data-category="C">
-    <span class="item-name">Ice cap L lid</span>
+    <span class="item-name">Ice cap L Lid</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Ice cap L lid" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Ice cap L Lid" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -597,7 +732,7 @@
     <span class="item-name">Pudding Cup</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Pudding Cup" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Pudding Cup " data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -606,7 +741,7 @@
     <span class="item-name">Pudding Cup Lid</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Pudding Cup Lid" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Puddng cup Lid" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -629,19 +764,19 @@
   </div>
 
   <div class="item-row" data-category="C">
-    <span class="item-name">Coffee sugar Brown</span>
+    <span class="item-name">Coffee suger Brown</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Coffee sugar Brown" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Coffee suger Brown" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
 
   <div class="item-row" data-category="C">
-    <span class="item-name">PASCUCCI seal</span>
+    <span class="item-name">PASCUCI seal</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="PASCUCCI seal" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="PASCUCI seal" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -681,6 +816,7 @@
       <button class="plus">＋</button>
     </div>
   </div>
+
   
 </div>
 
@@ -700,11 +836,9 @@
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
- (async () => {
 /* ===============================
    Supabase 初期化
 ================================ */
-// Supabaseキーをグローバルに露出させないためのスコープ保護
 const supabase = createClient(
   "https://ididxhgszvdvfyfzwfgm.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkaWR4aGdzenZkdmZ5Znp3ZmdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3Mzc5MzgsImV4cCI6MjA4MjMxMzkzOH0.ZVOS2nxT8KbCB7U5xL0DKy9DGj3KrjJU7AJkR0_b33g"
@@ -713,16 +847,12 @@ const supabase = createClient(
 /* ===============================
    認証チェック（ログイン済のみ許可）
 ================================ */
-const { data: sessionData } = await supabase.auth.getSession();
+const { data } = await supabase.auth.getSession();
 
-if (!sessionData.session) {
-  // セッションが復元される前に判定されるケース対策
-  const { data: userData } = await supabase.auth.getUser();
-
-  if (!userData.user) {
-    location.replace("./login.html");
-    return; // 未ログインはここで止める
-  }
+if (!data.session) {
+  // 未ログインなら login へ
+location.replace("../login.html");
+  throw new Error("not authenticated");
 }
 
 // ログイン済みならそのまま業務画面を表示
@@ -732,9 +862,7 @@ if (!sessionData.session) {
 // ===============================
 document.getElementById("logoutBtn").addEventListener("click", async () => {
   await supabase.auth.signOut();
-  sessionStorage.clear();
-  localStorage.clear();
-  location.replace("./login.html");
+location.replace("../login.html");
 });
 
 // カテゴリー制御用の定数
@@ -742,7 +870,7 @@ const ALLOWED_CATEGORIES = ["C","D","E"];
 
 const MACHINE_ID = "tablet-1";
 // 店舗ID（仙石山専用に固定）
-const STORE_ID = "store_c";
+const STORE_ID = "store_a";
 // 店舗ID → 店舗名変換
 const STORE_NAME_MAP = {
   store_a: "仙石山",
@@ -758,6 +886,8 @@ document.getElementById("storeName").textContent =
    Standard（usual_orders）読み込み
 ================================ */
 async function loadStandard() {
+  console.log("Standard load start");
+
   const { data, error } = await supabase
     .from("usual_orders")
     .select("item, quantity")
@@ -768,6 +898,8 @@ async function loadStandard() {
     alert("Standard の読み込みに失敗しました");
     return;
   }
+
+  console.log("Standard data:", data);
 
   const map = {};
   data.forEach(row => {
@@ -807,28 +939,12 @@ for (let m = 1; m <= 12; m++) {
   orderMonth.add(o);
 }
 
-function populateDays() {
-  orderDay.innerHTML = "";
-  const y = Number(orderYear.value);
-  const m = Number(orderMonth.value);
-  const lastDay = new Date(y, m, 0).getDate();
-
-  for (let d = 1; d <= lastDay; d++) {
-    const v = String(d).padStart(2, "0");
-    const o = new Option(d, v);
-    if (
-      y === now.getFullYear() &&
-      m === now.getMonth() + 1 &&
-      d === now.getDate()
-    )
-      o.selected = true;
-    orderDay.add(o);
-  }
+for (let d = 1; d <= 31; d++) {
+  const v = String(d).padStart(2, "0");
+  const o = new Option(d, v);
+  if (d === now.getDate()) o.selected = true;
+  orderDay.add(o);
 }
-
-populateDays();
-orderYear.onchange = populateDays;
-orderMonth.onchange = populateDays;
 
 /* ===============================
    カテゴリー切り替え
@@ -838,19 +954,12 @@ document.querySelectorAll("#categoryButtons button[data-category]").forEach(btn 
     document.querySelectorAll("#categoryButtons button").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
 
-    const cats = btn.dataset.category.split(",");
+    const cat = btn.dataset.category;
     document.querySelectorAll(".item-row").forEach(row => {
-      row.style.display = cats.includes(row.dataset.category) ? "" : "none";
+      row.style.display = row.dataset.category === cat ? "" : "none";
     });
   };
 });
-
-const standardBtn = document.getElementById("loadUsual");
-standardBtn.onclick = () => {
-  document.querySelectorAll("#categoryButtons button").forEach(b => b.classList.remove("active"));
-  standardBtn.classList.add("active");
-  loadStandard();
-};
 
 // 初期表示 C
 document.querySelector('[data-category="C"]').click();
@@ -914,14 +1023,19 @@ document.getElementById("submit").onclick = async () => {
   } else {
     alert("保存しました");
     submitting = false;
-    sessionStorage.clear();
-    location.href = "./history.html";
+location.href = "./history.html";
     document.querySelectorAll(".qty").forEach(i => i.value = 0);
     document.getElementById("orderNote").value = "";
   }
 };
 
-})();
+/* ===============================
+   Standard（usual_orders）ボタン
+================================ */
+const loadUsualBtn = document.getElementById("loadUsual");
+if (loadUsualBtn) {
+  loadUsualBtn.onclick = loadStandard;
+}
 </script>
 
 </div>
