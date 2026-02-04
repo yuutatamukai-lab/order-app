@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     script-src 'self' https://esm.sh 'unsafe-inline';
@@ -20,6 +20,13 @@
   <title>発注 西麻布</title>
 
   <style>
+    :root {
+      --safe-bottom: env(safe-area-inset-bottom);
+    }
+
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       margin: 0;
@@ -181,6 +188,29 @@
     .bottom-menu button:hover {
       background: #dcdcdc;
     }
+
+    /* ===== モバイル運用対策 ===== */
+
+    /* スクロール中の誤タップ防止 */
+    button {
+      touch-action: manipulation;
+    }
+
+    /* 下部メニューをモバイルで固定 */
+    @media (max-width: 767px) {
+      .bottom-menu {
+        position: sticky;
+        bottom: 0;
+        background: #fff;
+        padding-bottom: calc(12px + var(--safe-bottom));
+        margin-top: 24px;
+        z-index: 10;
+      }
+
+      body {
+        padding-bottom: calc(120px + var(--safe-bottom));
+      }
+    }
   </style>
 </head>
 
@@ -223,16 +253,16 @@
     <span class="item-name">Lasagna</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Lasagna" data-category="A" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Lasagna" data-category="A" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
 
   <div class="item-row" data-category="A">
-    <span class="item-name">vegitarian Lasagna</span>
+    <span class="item-name">Vegetarian Lasagna</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="vegitarian Lasagna" data-category="A" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Vegetarian Lasagna" data-category="A" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -241,16 +271,16 @@
     <span class="item-name">Parmigiana</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="parmigiana" data-category="A" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Parmigiana" data-category="A" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
 
   <div class="item-row" data-category="D">
-    <span class="item-name">Pizzzetta</span>
+    <span class="item-name">Pizzetta</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Pizzetta" data-category="D" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Pizzetta" data-category="D" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -259,7 +289,7 @@
     <span class="item-name">Focaccia</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Focaccia" data-category="D" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Focaccia" data-category="D" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -268,7 +298,7 @@
     <span class="item-name">Colnetto</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Colnetto" data-category="D" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Colnetto" data-category="D" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -277,7 +307,7 @@
     <span class="item-name">Bacon</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Bacon" data-category="D" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Bacon" data-category="D" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -286,7 +316,7 @@
     <span class="item-name">Prosciutto Curdo</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Prosciutto Curdo" data-category="A" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Prosciutto Curdo" data-category="A" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -295,7 +325,7 @@
     <span class="item-name">Prosciutto Cotto small size</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Prosciutto Cotto small size" data-category="D" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Prosciutto Cotto small size" data-category="D" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -304,7 +334,7 @@
     <span class="item-name">Porchetta small size</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Porchetta small size" data-category="D" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Porchetta small size" data-category="D" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -313,7 +343,7 @@
     <span class="item-name">Mozzarella</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Mozzarella" data-category="D" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Mozzarella" data-category="D" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -322,7 +352,7 @@
     <span class="item-name">Taralli</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Taralli" data-category="D" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Taralli" data-category="D" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -331,7 +361,7 @@
     <span class="item-name">Taruto(egg set)</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Taruto(egg set)" data-category="D" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Taruto(egg set)" data-category="D" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -341,7 +371,7 @@
     <span class="item-name">Bombolone Crema</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Bombolone Crema" data-category="B" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Bombolone Crema" data-category="B" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -350,7 +380,7 @@
     <span class="item-name">Bombolone Pisutacchio</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Bombolone Pisutacchio" data-category="B" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Bombolone Pisutacchio" data-category="B" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -359,7 +389,7 @@
     <span class="item-name">Bomboloncino</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Bomboloncino" data-category="B" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Bomboloncino" data-category="B" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -368,7 +398,7 @@
     <span class="item-name">Cannolo</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Cannolo" data-category="B" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Cannolo" data-category="B" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -377,7 +407,7 @@
     <span class="item-name">Ciamabella</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Ciamabella" data-category="B" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Ciamabella" data-category="B" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -386,7 +416,7 @@
     <span class="item-name">Raspberry Brownie</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Raspberry Brownie" data-category="E" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Raspberry Brownie" data-category="E" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -395,7 +425,7 @@
     <span class="item-name">Short Cake</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Short Cake" data-category="E" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Short Cake" data-category="E" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -404,7 +434,7 @@
     <span class="item-name">Chocolate Cookie</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Chocolate Cookie" data-category="B" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Chocolate Cookie" data-category="B" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -413,7 +443,7 @@
     <span class="item-name">Carrot Cake Muffin</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Carrot Cake Muffin" data-category="B" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Carrot Cake Muffin" data-category="B" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -422,7 +452,7 @@
     <span class="item-name">Matcha Chocolate Muffin</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Matcha Chocolate Muffin" data-category="B" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Matcha Chocolate Muffin" data-category="B" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -431,7 +461,7 @@
     <span class="item-name">Tiramisu</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Tiramisu" data-category="B" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Tiramisu" data-category="B" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -440,7 +470,7 @@
     <span class="item-name">Tiramisu Pistacchio</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Tiramisu Pistacchio" data-category="B" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Tiramisu Pistacchio" data-category="B" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -449,7 +479,7 @@
     <span class="item-name">Cheese Cake</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Cheese Cake" data-category="B" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Cheese Cake" data-category="B" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -458,7 +488,7 @@
     <span class="item-name">Blueberry Cheese Cake</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Blueberry Cheese Cake" data-category="B" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Blueberry Cheese Cake" data-category="B" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -467,7 +497,7 @@
     <span class="item-name">Budino</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Budino" data-category="B" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Budino" data-category="B" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -476,7 +506,7 @@
     <span class="item-name">Panna Cotta</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Panna Cotta" data-category="B" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Panna Cotta" data-category="B" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -485,7 +515,7 @@
     <span class="item-name">Pan Cake</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Pan Cake" data-category="B" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Pan Cake" data-category="B" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -495,7 +525,7 @@
     <span class="item-name">Hot cap M</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Hot cap M" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Hot cap M" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -504,7 +534,7 @@
     <span class="item-name">Hot cap M lid</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Hot cap M lid" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Hot cap M lid" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -513,7 +543,7 @@
     <span class="item-name">Hot cap L</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Hot cap L" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Hot cap L" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -522,7 +552,7 @@
     <span class="item-name">Hot cap L lid</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Hot cap L lid" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Hot cap L lid" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -531,7 +561,7 @@
     <span class="item-name">Ice cap M</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Ice cap M" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Ice cap M" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -540,7 +570,7 @@
     <span class="item-name">Ice cap M lid</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Ice cap M lid" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Ice cap M lid" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -549,7 +579,7 @@
     <span class="item-name">Ice cap L</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Ice cap L" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Ice cap L" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -558,7 +588,7 @@
     <span class="item-name">Ice cap L lid</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Ice cap L lid" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Ice cap L lid" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -567,7 +597,7 @@
     <span class="item-name">Pudding Cup</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Pudding Cup " data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Pudding Cup" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -576,7 +606,7 @@
     <span class="item-name">Pudding Cup Lid</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Puddng cup Lid" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Pudding Cup Lid" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -584,7 +614,7 @@
     <span class="item-name">Coffee sugar</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Coffee sugar" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Coffee sugar" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -593,25 +623,25 @@
     <span class="item-name">Coffee sugar Large</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Coffee sugar Large" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Coffee sugar Large" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
 
   <div class="item-row" data-category="C">
-    <span class="item-name">Coffee suger Brown</span>
+    <span class="item-name">Coffee sugar Brown</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Coffee suger Brown" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Coffee sugar Brown" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
 
   <div class="item-row" data-category="C">
-    <span class="item-name">PASCUCI seal</span>
+    <span class="item-name">PASCUCCI seal</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="PASCUCI seal" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="PASCUCCI seal" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -620,7 +650,7 @@
     <span class="item-name">Cutlery Pouch White</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Cutlery Pouch White" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Cutlery Pouch White" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -629,7 +659,7 @@
     <span class="item-name">PASCUCCI paper bag</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="PASCUCCI paper bag" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="PASCUCCI paper bag" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -638,7 +668,7 @@
     <span class="item-name">Lunch mat</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Lunch mat" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Lunch mat" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -647,7 +677,7 @@
     <span class="item-name">Coffee beans</span>
     <div class="qty-control">
       <button class="minus">−</button>
-      <input type="number" class="qty" data-item="Coffee beans" data-category="C" value="0">
+      <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" data-item="Coffee beans" data-category="C" value="0">
       <button class="plus">＋</button>
     </div>
   </div>
@@ -777,12 +807,28 @@ for (let m = 1; m <= 12; m++) {
   orderMonth.add(o);
 }
 
-for (let d = 1; d <= 31; d++) {
-  const v = String(d).padStart(2, "0");
-  const o = new Option(d, v);
-  if (d === now.getDate()) o.selected = true;
-  orderDay.add(o);
+function populateDays() {
+  orderDay.innerHTML = "";
+  const y = Number(orderYear.value);
+  const m = Number(orderMonth.value);
+  const lastDay = new Date(y, m, 0).getDate();
+
+  for (let d = 1; d <= lastDay; d++) {
+    const v = String(d).padStart(2, "0");
+    const o = new Option(d, v);
+    if (
+      y === now.getFullYear() &&
+      m === now.getMonth() + 1 &&
+      d === now.getDate()
+    )
+      o.selected = true;
+    orderDay.add(o);
+  }
 }
+
+populateDays();
+orderYear.onchange = populateDays;
+orderMonth.onchange = populateDays;
 
 /* ===============================
    カテゴリー切り替え
@@ -792,10 +838,19 @@ document.querySelectorAll("#categoryButtons button[data-category]").forEach(btn 
     document.querySelectorAll("#categoryButtons button").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
 
-    const cats = btn.dataset.category.split(",");    document.querySelectorAll(".item-row").forEach(row => {
-    row.style.display = cats.includes(row.dataset.category) ? "" : "none";    });
+    const cats = btn.dataset.category.split(",");
+    document.querySelectorAll(".item-row").forEach(row => {
+      row.style.display = cats.includes(row.dataset.category) ? "" : "none";
+    });
   };
 });
+
+const standardBtn = document.getElementById("loadUsual");
+standardBtn.onclick = () => {
+  document.querySelectorAll("#categoryButtons button").forEach(b => b.classList.remove("active"));
+  standardBtn.classList.add("active");
+  loadStandard();
+};
 
 // 初期表示 C
 document.querySelector('[data-category="C"]').click();
@@ -812,13 +867,17 @@ document.querySelectorAll(".qty-control").forEach(c => {
 /* ===============================
    送信
 ================================ */
+let submitting = false;
 document.getElementById("submit").onclick = async () => {
+  if (submitting) return;
+  submitting = true;
   const y = orderYear.value;
   const m = orderMonth.value;
   const d = orderDay.value;
 
   if (!y || !m || !d) {
     alert("発注日を選択してください");
+    submitting = false;
     return;
   }
 
@@ -843,6 +902,7 @@ document.getElementById("submit").onclick = async () => {
 
   if (!rows.length) {
     alert("数量を入力してください");
+    submitting = false;
     return;
   }
 
@@ -850,8 +910,10 @@ document.getElementById("submit").onclick = async () => {
   if (error) {
     console.error(error);
     alert("保存失敗");
+    submitting = false;
   } else {
     alert("保存しました");
+    submitting = false;
     sessionStorage.clear();
     location.href = "./history.html";
     document.querySelectorAll(".qty").forEach(i => i.value = 0);
@@ -859,13 +921,6 @@ document.getElementById("submit").onclick = async () => {
   }
 };
 
-/* ===============================
-   Standard（usual_orders）ボタン
-================================ */
-const loadUsualBtn = document.getElementById("loadUsual");
-if (loadUsualBtn) {
-  loadUsualBtn.onclick = loadStandard;
-}
 })();
 </script>
 
