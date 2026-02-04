@@ -75,13 +75,30 @@ supabase.auth.onAuthStateChange((event) => {
   }
 });
 
-/* 店舗ID（仙石山専用・この history.html は store_a 固定） */
-const STORE_ID = "store_a";
+/* ===============================
+   ログインユーザーから店舗IDを決定
+=============================== */
+const { data: { user } } = await supabase.auth.getUser();
+const emailId = user.email.split("@")[0];
+
+let STORE_ID = "";
+if (emailId.startsWith("store01")) {
+  STORE_ID = "store_a"; // 仙石山
+} else if (emailId.startsWith("store02")) {
+  STORE_ID = "store_b";
+} else if (emailId.startsWith("store03")) {
+  STORE_ID = "store_c";
+} else {
+  alert("店舗判定ができませんでした");
+  throw new Error("invalid store mapping");
+}
+
 const STORE_NAMES = {
   store_a: "仙石山",
   store_b: "店舗B",
   store_c: "店舗C"
 };
+
 document.getElementById("pageTitle").textContent =
   `発注履歴（${STORE_NAMES[STORE_ID] ?? STORE_ID}）`;
 
